@@ -4,6 +4,7 @@
 package myrogue;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -41,16 +42,21 @@ public class GenerateDungeon {
 				} else if (j == 0 || j == (dungeon[0].length - 1)) {
 					dungeon[i][j] = key.getChar("BOUND"); // CONCRETE
 				} else {
-					dungeon[i][j] = key.getChar("FLOOR"); // FLOOR
+					dungeon[i][j] = key.getChar("SPACE"); // FLOOR
 				}
 
 			}
 		}
 	}
-	
-//	private boolean checkIfOccupied(int x, int y) {
-//		if(dungeon[y][x] == 0)
-//	}
+
+	public void applySchema(Schema schema, Boolean overwrite) {
+		if(overwrite) {
+			for (int[] element : schema.getSchema()) {
+				String s = schema.checkKey(element[2]);
+				dungeon[element[1]][element[0]] = key.getChar(s);
+			}
+		}
+	}
 	
 	public void generateRooms() {
 //		rooms = new Room[numRooms];
@@ -82,8 +88,11 @@ public class GenerateDungeon {
 					dungeon[element[1]][element[0]] = key.getChar("V_WALL");
 				} else {
 					System.out.println("Something broke");
+					return;
 				}
 			}
+			applySchema(r.getFloor(), true);
+
 			
 		}
 	}
@@ -97,12 +106,12 @@ public class GenerateDungeon {
 		int south = bounds[1];
 		int east = bounds[2];
 		int west = bounds[3];
-		if (north <= 0 || south >= DUNGEON_HEIGHT || east >= DUNGEON_WIDTH || west <= 0) {
+		if (north <= 0 || south >= (DUNGEON_HEIGHT-1) || east >= (DUNGEON_WIDTH-1) || west <= 0) {
 			return false;
 		} else {
-			for (int i = north; i < south; i++) {
-				for (int j = west; j < east; j++) {
-					if (dungeon[i][j] != key.getChar("FLOOR")) {
+			for (int i = north; i <= south; i++) {
+				for (int j = west; j <= east; j++) {
+					if (dungeon[i][j] != key.getChar("SPACE")) {
 						return false;
 					}
 				}
