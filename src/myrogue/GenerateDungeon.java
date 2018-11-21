@@ -53,8 +53,8 @@ public class GenerateDungeon {
 //	}
 	
 	public void generateRooms() {
-		rooms = new Room[numRooms];
-		
+//		rooms = new Room[numRooms];
+
 		int sizeRemaining = MAX_SIZE;
 		int buffer = 2;
 		for(int i=0; i<numRooms; i++) {
@@ -64,18 +64,25 @@ public class GenerateDungeon {
 				int x = rand.nextInt(DUNGEON_WIDTH - (buffer * 2)) + buffer; // 2 - 47
 				int y = rand.nextInt(DUNGEON_HEIGHT - (buffer * 2)) + buffer;
 				
-				int w = rand.nextInt(MAX_ROOM_WIDTH);
-				int h = rand.nextInt(MAX_ROOM_HEIGHT);
+				int w = rand.nextInt(MAX_ROOM_WIDTH - MIN_ROOM_WIDTH) + MIN_ROOM_WIDTH;
+				int h = rand.nextInt(MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT) + MIN_ROOM_HEIGHT;
 				int roomSize = w*h;
 				while (roomSize > sizeRemaining) {
-					w = rand.nextInt(MAX_ROOM_WIDTH);
-					h = rand.nextInt(MAX_ROOM_HEIGHT);
+					w = rand.nextInt(MAX_ROOM_WIDTH - MIN_ROOM_WIDTH) + MIN_ROOM_WIDTH;
+					h = rand.nextInt(MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT) + MIN_ROOM_HEIGHT;
 					roomSize = w*h;
 				}
 				r = new Room(x,y,w,h);
 			}
+			System.out.println(r);
 			for(int[] element : r.getEdge()) {
-				System.out.println(Arrays.toString(element));
+				if(element[2] == 0) {
+					dungeon[element[1]][element[0]] = key.getChar("H_WALL");
+				} else if(element[2] == 1){
+					dungeon[element[1]][element[0]] = key.getChar("V_WALL");
+				} else {
+					System.out.println("Something broke");
+				}
 			}
 			
 		}
@@ -90,7 +97,7 @@ public class GenerateDungeon {
 		int south = bounds[1];
 		int east = bounds[2];
 		int west = bounds[3];
-		if (north < 0 || south > DUNGEON_HEIGHT || east > DUNGEON_WIDTH || west < 0) {
+		if (north <= 0 || south >= DUNGEON_HEIGHT || east >= DUNGEON_WIDTH || west <= 0) {
 			return false;
 		} else {
 			for (int i = north; i < south; i++) {

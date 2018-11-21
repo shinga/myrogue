@@ -30,14 +30,14 @@ public class Room {
 	
 	private void constructEdge() {
 //		int numEdges = (2*width)+(2*height)-4;
-		
+		System.out.println("HERE");
 //		If width is even, east half is smaller
 		if (isEven(width)) {
-			east = center[1] + (width/2 - 1);
-			west = center[1] - (width/2);
+			east = center[0] + (width/2 - 1);
+			west = center[0] - (width/2);
 		} else {
-			east = center[1] + (width/2);
-			west = center[1] - (width/2);
+			east = center[0] + (width/2);
+			west = center[0] - (width/2);
 		}
 //		If height is even, bottom half is smaller [(0,0) is NW corner]
 		if (isEven(height)) {
@@ -48,13 +48,13 @@ public class Room {
 			south = center[1] + (height/2);
 		}
 		
-		for(int i=west; i<east; i++) {
+		for(int i=west; i<=east; i++) {
 //			Top edge
 			edge.add(new int[] {i, north, H_WALL});
 //			Bottom edge
 			edge.add(new int[] {i, south, H_WALL});
 		}
-		for(int i=north; i<south; i++) {
+		for(int i=(north+1); i<south; i++) {
 //			West edge
 			edge.add(new int[] {west, i, V_WALL});
 //			East edge
@@ -74,6 +74,14 @@ public class Room {
 		for(int[] element : edge) {
 			System.out.println(Arrays.toString(element));
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return ("Center: " + Arrays.toString(center) + 
+				", Height: " + height + 
+				", Width: " + width + 
+				", Bounds: " + Arrays.toString(getBounds()));
 	}
 	
 }
