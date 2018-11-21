@@ -15,8 +15,9 @@ public class Room {
 	private int height = 4;
 	private int V_WALL = 1;
 	private int H_WALL = 0;
-	private List<int[]> edge = new ArrayList<int[]>();
+//	private List<int[]> edge = new ArrayList<int[]>();
 //	private List<int[]> floor = new ArrayList<int[]>();
+	private Schema edge;
 	private Schema floor;
 	private int north, south, east, west;
 	
@@ -76,25 +77,18 @@ public class Room {
 			south = center[1] + (height/2);
 		}
 		
-		for(int i=west; i<=east; i++) {
-//			Top edge
-			edge.add(new int[] {i, north, H_WALL});
-//			Bottom edge
-			edge.add(new int[] {i, south, H_WALL});
-		}
-		for(int i=(north+1); i<south; i++) {
-//			West edge
-			edge.add(new int[] {west, i, V_WALL});
-//			East edge
-			edge.add(new int[] {east, i, V_WALL});			
-		}
+		edge = new Schema(north, north, east, west, H_WALL, roomKey);
+		edge.append(south, south, east, west, H_WALL);
+		edge.append((north+1), (south-1), west, west, V_WALL);
+		edge.append((north+1), (south-1), east, east, V_WALL);
+
 	}
 	
 	private Boolean isEven(int i) {
 		return (i % 2) == 0;
 	}
 	
-	public List<int[]> getEdge(){
+	public Schema getEdge(){
 		return edge;
 	}
 	
@@ -104,7 +98,7 @@ public class Room {
 	}
 	
 	public void printEdges() {
-		for(int[] element : edge) {
+		for(int[] element : edge.getSchema()) {
 			System.out.println(Arrays.toString(element));
 		}
 	}
