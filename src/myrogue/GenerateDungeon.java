@@ -81,7 +81,7 @@ public class GenerateDungeon {
 				r = new Room(x,y,w,h);
 			}
 			System.out.println(r);
-			for(int[] element : r.getEdge()) {
+			for(int[] element : r.getEdge().getSchema()) {
 				if(element[2] == 0) {
 					dungeon[element[1]][element[0]] = key.getChar("H_WALL");
 				} else if(element[2] == 1){
