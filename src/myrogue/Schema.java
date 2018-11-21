@@ -22,6 +22,14 @@ public class Schema {
 		key = newKey;
 	}
 	
+	public void append(int northbound, int southbound, int eastbound, int westbound, int value) {
+		for(int i=northbound; i<=southbound; i++) {
+			for(int j=westbound; j<=eastbound; j++) {
+				schema.add(new int[] {j, i, value});
+			}
+		}
+	}
+	
 	public List<int[]> getSchema(){
 		return schema;
 	}
