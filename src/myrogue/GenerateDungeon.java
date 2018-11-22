@@ -16,22 +16,33 @@ public class GenerateDungeon {
 	private Random rand = new Random();
 
 	private int numRooms;
+	private int roomAttempts;
 	private static final int DUNGEON_WIDTH = 120;
 	private static final int DUNGEON_HEIGHT = 30;
 	
-	private static final int MAX_SIZE = (DUNGEON_WIDTH * DUNGEON_HEIGHT)/10*4;
+	private int sparcity;
+	private final int MAX_SIZE;
 	
-	private static final int MIN_ROOM_WIDTH = 8;
-	private static final int MAX_ROOM_WIDTH = (DUNGEON_WIDTH)/4;
+	private final int MIN_ROOM_WIDTH = 8;
+	private final int MAX_ROOM_WIDTH = (DUNGEON_WIDTH)/4;
 	
-	private static final int MIN_ROOM_HEIGHT = 4;
-	private static final int MAX_ROOM_HEIGHT = (DUNGEON_HEIGHT)/2;
+	private final int MIN_ROOM_HEIGHT = 4;
+	private final int MAX_ROOM_HEIGHT = (DUNGEON_HEIGHT)/2;
 	private Room[] rooms;
 	
 	private final char[][] dungeon;
 
-	public GenerateDungeon(int num) {
+	
+/*
+ * Parameters: 	int num (number of rooms)
+ * 				int sparce (number from 1-10, sparceness of the dungeon - how much room should be left an empty space)
+ * 					- 3 means a maximum of 30% of the dungeon will be filled with rooms
+ */
+	public GenerateDungeon(int num, int sparce) {
+		sparcity = sparce;
+		MAX_SIZE = (DUNGEON_WIDTH * DUNGEON_HEIGHT)/10*sparcity;
 		numRooms = num;
+		roomAttempts = 50;
 		dungeon = new char[DUNGEON_HEIGHT][DUNGEON_WIDTH];
 		for (int i=0; i<dungeon.length; i++) {
 			for (int j=0; j<dungeon[i].length; j++) {
@@ -64,39 +75,39 @@ public class GenerateDungeon {
 		int sizeRemaining = MAX_SIZE;
 		int buffer = 2;
 		for(int i=0; i<numRooms; i++) {
-//			Get center
+
+			int attempt = 0;
+			int x, y, w, h, roomSize = 0;
 			Room r = new Room();
-			while (roomCheck(r) == false) {
-				int x = rand.nextInt(DUNGEON_WIDTH - (buffer * 2)) + buffer; // 2 - 47
-				int y = rand.nextInt(DUNGEON_HEIGHT - (buffer * 2)) + buffer;
+			do {
+
+				x = rand.nextInt(DUNGEON_WIDTH - (buffer * 2)) + buffer; // 2 - 47
+				y = rand.nextInt(DUNGEON_HEIGHT - (buffer * 2)) + buffer;
 				
-				int w = rand.nextInt(MAX_ROOM_WIDTH - MIN_ROOM_WIDTH) + MIN_ROOM_WIDTH;
-				int h = rand.nextInt(MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT) + MIN_ROOM_HEIGHT;
-				int roomSize = w*h;
-				while (roomSize > sizeRemaining) {
-					w = rand.nextInt(MAX_ROOM_WIDTH - MIN_ROOM_WIDTH) + MIN_ROOM_WIDTH;
-					h = rand.nextInt(MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT) + MIN_ROOM_HEIGHT;
-					roomSize = w*h;
+				w = rand.nextInt(MAX_ROOM_WIDTH - MIN_ROOM_WIDTH) + MIN_ROOM_WIDTH;
+				h = rand.nextInt(MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT) + MIN_ROOM_HEIGHT;
+				roomSize = w*h;
+				if ((roomSize > sizeRemaining) || (attempt > roomAttempts)) {
+					break;
 				}
+
 				r = new Room(x,y,w,h);
+				attempt++;
+			} while ((roomCheck(r) == false));
+			
+			if ((roomSize > sizeRemaining) || (attempt > roomAttempts)) {
+				continue;
 			}
 			System.out.println(r);
-			for(int[] element : r.getEdge().getSchema()) {
-				if(element[2] == 0) {
-					dungeon[element[1]][element[0]] = key.getChar("H_WALL");
-				} else if(element[2] == 1){
-					dungeon[element[1]][element[0]] = key.getChar("V_WALL");
-				} else {
-					System.out.println("Something broke");
-					return;
-				}
-			}
+			applySchema(r.getEdge(), true);
 			applySchema(r.getFloor(), true);
-
-			
+			sizeRemaining = sizeRemaining - roomSize;
 		}
+		
 	}
 	
+	
+//	Returns false if invalid room, true if room can exist
 	private Boolean roomCheck(Room r) {
 		if (r == null) {
 			return false;

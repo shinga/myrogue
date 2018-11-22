@@ -13,6 +13,11 @@ public class Schema {
 		schema = scheme;
 		key = newKey;
 	}
+	
+	public Schema(Map<Integer,String> newKey) {
+		key = newKey;
+	}
+	
 	public Schema(int northbound, int southbound, int eastbound, int westbound, int value, Map<Integer,String> newKey) {
 		for(int i=northbound; i<=southbound; i++) {
 			for(int j=westbound; j<=eastbound; j++) {
